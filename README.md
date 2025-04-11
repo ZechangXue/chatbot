@@ -186,4 +186,88 @@ MIT License
 
 3. **聊天集成**：
    - 在聊天功能中集成数据查询和计算
-   - 使用OpenAI API生成基于计算结果的自然语言回复 
+   - 使用OpenAI API生成基于计算结果的自然语言回复
+
+## EC2部署指南
+
+### 前提条件
+- EC2实例（Amazon Linux）
+- 已安装Docker
+- 已克隆代码仓库
+- 已配置安全组（开放8000端口）
+
+### 部署步骤
+
+1. **连接到EC2实例**
+```bash
+ssh -i chatbot-key.pem ec2-user@16.170.253.244
+```
+
+2. **安装依赖**
+```bash
+# 安装Docker（如果尚未安装）
+sudo yum update -y
+sudo yum install docker -y
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+
+# 安装Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+3. **配置环境变量**
+```bash
+# 创建.env文件
+cat > .env << EOL
+# 添加您的环境变量
+EOL
+```
+
+4. **构建和运行Docker容器**
+```bash
+# 构建镜像
+docker build -t chatbot-app .
+
+# 运行容器
+docker run -d \
+  --name chatbot-app \
+  -p 8000:8000 \
+  --env-file .env \
+  chatbot-app
+```
+
+5. **访问服务**
+- 后端API: http://16.170.253.244:8000
+- 前端界面: http://16.170.253.244:8000
+
+### 维护命令
+```bash
+# 查看日志
+docker logs chatbot-app
+
+# 重启服务
+docker restart chatbot-app
+
+# 停止服务
+docker stop chatbot-app
+
+# 删除容器
+docker rm chatbot-app
+```
+
+### 故障排除
+1. 检查Docker服务状态
+```bash
+sudo service docker status
+```
+
+2. 检查容器状态
+```bash
+docker ps -a
+```
+
+3. 检查端口监听
+```bash
+sudo netstat -tuln | grep 8000
+``` 

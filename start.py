@@ -2,6 +2,9 @@ import os
 import sys
 import uvicorn
 import shutil
+import subprocess
+import time
+from dotenv import load_dotenv
 
 # 添加当前目录和backend目录到Python路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +34,45 @@ if os.path.exists(csv_path):
 else:
     print(f"CSV file not found at {csv_path}")
 
+# 加载环境变量
+load_dotenv()
+
+def start_backend():
+    print("Starting backend service...")
+    backend_process = subprocess.Popen(
+        ["python", "backend/app.py"],
+        env=dict(os.environ, HOST="0.0.0.0", PORT="8000")
+    )
+    return backend_process
+
+def start_frontend():
+    print("Starting frontend service...")
+    frontend_process = subprocess.Popen(
+        ["npm", "start"],
+        cwd="frontend",
+        env=dict(os.environ, REACT_APP_API_URL="http://0.0.0.0:8000")
+    )
+    return frontend_process
+
+def main():
+    try:
+        backend = start_backend()
+        time.sleep(2)  # 等待后端启动
+        frontend = start_frontend()
+        
+        print("\nServices are running:")
+        print("Backend API: http://0.0.0.0:8000")
+        print("Frontend: http://localhost:3000")
+        
+        # 保持程序运行
+        while True:
+            time.sleep(1)
+            
+    except KeyboardInterrupt:
+        print("\nShutting down services...")
+        backend.terminate()
+        frontend.terminate()
+        print("Services stopped.")
+
 if __name__ == "__main__":
-    # 启动FastAPI应用
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000) 
+    main() 
