@@ -11,16 +11,7 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制应用代码和模型文件
-COPY backend/ backend/
-COPY frontend/ frontend/
-COPY models/ models/
-COPY start.py .
-
-# 复制样本数据
-COPY sample_txns.csv .
-
-# 设置环境变量
-ENV PYTHONPATH=/app
+COPY . .
 
 # 暴露端口
 EXPOSE 8000
