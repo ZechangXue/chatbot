@@ -1,0 +1,25 @@
+name: Require Pull Request Approval
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  require-approval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for required approvals
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            const hasApproval = reviews.some(review => review.state === 'APPROVED');
+            
+            if (!hasApproval) {
+              core.setFailed('This pull request requires at least one approval before it can be merged.');
+            } 
