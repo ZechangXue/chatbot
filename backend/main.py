@@ -17,6 +17,7 @@ import logging
 import json
 import asyncio
 import re
+import uvicorn
 
 # Import custom modules for data processing and formula calculation
 from .data_processor import DataProcessor
@@ -658,5 +659,4 @@ async def test_query():
         }
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000) 
