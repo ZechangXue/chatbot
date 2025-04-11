@@ -40,7 +40,7 @@ load_dotenv()
 def start_backend():
     print("Starting backend service...")
     backend_process = subprocess.Popen(
-        ["python", "backend/app.py"],
+        ["python", "backend/main.py"],
         env=dict(os.environ, HOST="0.0.0.0", PORT="8000")
     )
     return backend_process
